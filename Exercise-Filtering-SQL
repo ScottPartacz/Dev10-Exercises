@@ -1,0 +1,41 @@
+SELECT ColorID,ColorName  From Warehouse.Colors WHERE ColorName LIKE 'Dark%'
+
+SELECT ColorName From Warehouse.Colors WHERE LEN(ColorName) = 5
+
+SELECT ColorName from Warehouse.Colors WHERE ColorID = 1 OR ColorID = 11 OR ColorID = 15 OR ColorID = 36
+
+SELECT ColorName FROM Warehouse.Colors WHERE ColorID IN (1,11,15,36)
+
+SELECT CustomerName FROM Sales.Customers WHERE PostalCityID = 242
+
+SELECT CustomerName FROM Sales.Customers WHERE DeliveryPostalCode = 90210
+
+SELECT CustomerName FROM Sales.Customers WHERE CustomerName Like 'An%'
+
+SELECT CustomerName FROM Sales.Customers WHERE CustomerName BETWEEN 'An' and 'Ao'
+
+SELECT CustomerName, PhoneNumber FROM Sales.Customers WHERE PhoneNumber like '%555-%'
+
+SELECT CustomerName FROM Sales.Customers WHERE DeliveryAddressLine1 = 'Shop 2' AND PostalAddressLine2 = 'Emilyville'
+
+SELECT Distinct DeliveryMethodID FROM Sales.Customers
+
+SELECT TOP 5 CustomerName FROM Sales.Customers ORDER BY CustomerName DESC
+
+SELECT CustomerName, AccountOpenedDate FROM Sales.Customers WHERE AccountOpenedDate >= '2015-07-01' AND AccountOpenedDate <= '2015-12-31' ORDER BY AccountOpenedDate DESC
+
+SELECT CustomerName, AccountOpenedDate FROM Sales.Customers WHERE AccountOpenedDate BETWEEN '2015-07-01' AND '2015-12-31' ORDER BY AccountOpenedDate DESC
+
+SELECT CreditLimit FROM Sales.Customers WHERE CustomerName IN ('Dipti Shah', 'Ivana Hadrabova', 'Emma Salpa', 'Ian Olofsson') ORDER BY CreditLimit ASC
+
+SELECT TOP 5 CustomerID FROM Sales.Customers WHERE BuyingGroupID IS NULL
+
+SELECT TOP 5 CustomerID FROM Sales.Customers WHERE BuyingGroupID IS NOT NULL
+
+SELECT TOP 4 CustomerName, CASE
+    WHEN BuyingGroupID IS Null THEN 'No Buyer'
+    ELSE Cast(BuyingGroupID as varchar(20))
+END AS BuyerGroup
+FROM Sales.Customers
+WHERE CustomerName IN ('Durdanah Abbasi', 'Emilie Hrdlickova') OR CustomerName LIKE '%Head%'
+ORDER BY BuyerGroup
