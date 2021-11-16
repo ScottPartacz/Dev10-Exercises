@@ -1,0 +1,51 @@
+SELECT 'All for one, and one for all.'
+
+SELECT 'All for one,' + 'and one for all'
+
+SELECT 'All' + 'for one' + ',and ' + 'one for' + 'all'
+
+SELECT LEN('All for one, and one for all.')
+
+SELECT * FROM string_split('All for one, and one for all.',' ' )
+
+SELECT * FROM string_split('All for one, and one for all.',',' )
+
+SELECT TOP 5 FullName FROM Application.People
+
+SELECT TOP 5 FullName, SUBSTRING(FullName,0,CHARINDEX(' ',FullName)), LEFT(SUBSTRING(FullName,CHARINDEX(' ',FullName)+1,LEN(FullName)),1) FROM Application.People
+
+SELECT Top 8 CustomerCategoryName, PATINDEX('g%',CustomerCategoryName) FROM Sales.CustomerCategories
+
+SELECT Top 8 CustomerCategoryName, PATINDEX('G%R%',CustomerCategoryName) FROM Sales.CustomerCategories
+
+SELECT 6 + 6
+
+SELECT 5 / 2
+
+SELECT 5.0 / 2.0
+
+SELECT 5 / 2.0
+
+SELECT 5.0 / 2
+
+SELECT SQL_VARIANT_PROPERTY(5/2.0,'BaseType')
+
+SELECT SQL_VARIANT_PROPERTY(5.0/2,'BaseType')
+
+SELECT ABS(-5)
+
+SELECT 6 * 2
+
+SELECT 6 * 2.0
+
+SELECT 6 / 2
+
+SELECT -6 / 4 , -6 % 4
+
+SELECT POWER(6,2)
+
+SELECT * FROM Sales.CustomerCategories
+
+SELECT CustomerCategoryName FROM Sales.CustomerCategories
+
+SELECT TOP 8 CustomerCategoryName FROM Sales.CustomerCategories
