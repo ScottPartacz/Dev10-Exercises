@@ -1,0 +1,46 @@
+SELECT * FROM HumanResources.Employee
+
+SELECT * FROM Sales.SalesOrderHeader
+
+SELECT * FROM Production.WorkOrderRouting
+
+/* 1 */
+SELECT YEAR(HireDate), COUNT(NationalIDNumber)  FROM HumanResources.Employee
+GROUP BY YEAR(HireDate)
+ORDER BY YEAR(HireDate) DESC
+
+/* 2 */
+SELECT MIN(DATEDIFF(d,OrderDate,ShipDate)), MAX(DATEDIFF(d,OrderDate,ShipDate)) FROM Sales.SalesOrderHeader
+
+/* 3 */
+SELECT YEAR(OrderDate), COUNT( DISTINCT MONTH(OrderDate)) FROM Sales.SalesOrderHeader
+GROUP BY YEAR(OrderDate)
+ORDER BY YEAR(OrderDate) 
+
+/* 4 */
+SELECT MIN(OrderDate), MAX(OrderDate) FROM Sales.SalesOrderHeader
+
+/* 5 */
+
+SELECT DATENAME(dw,OrderDate), COUNT(SalesOrderID), AVG(TotalDue) FROM Sales.SalesOrderHeader
+WHERE YEAR(OrderDate) = 2012 /* Why just this year?*/
+GROUP BY DATENAME(dw,OrderDate), DATEPART(dw,OrderDate)
+ORDER BY DATEPART(dw,OrderDate)
+/* 6 */
+SELECT DATEDIFF(d,ScheduledStartDate,ScheduledEndDate) AS ScheduledTime, 
+DATEDIFF(d,ActualStartDate,ActualEndDate) AS ActualTime 
+FROM Production.WorkOrderRouting
+WHERE DATEDIFF(d,ScheduledStartDate,ScheduledEndDate) < DATEDIFF(d,ActualStartDate,ActualEndDate)
+/* 7 */
+SELECT ProductID
+FROM Production.WorkOrderRouting
+WHERE DATEDIFF(d,ActualStartDate,ActualEndDate) - DATEDIFF(d,ScheduledStartDate,ScheduledEndDate) > 14
+
+/* 8 */
+SELECT SUM(PlannedCost - ActualCost) FROM Production.WorkOrderRouting
+
+/* 9 */
+
+SELECT DATENAME(dw,OrderDate), COUNT(PurchaseOrderID) FROM Purchasing.PurchaseOrderHeader
+GROUP BY DATENAME(dw,OrderDate), DATEPART(dw,OrderDate)
+ORDER BY DATEPART(dw,OrderDate)
