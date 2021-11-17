@@ -1,0 +1,41 @@
+SELECT AVG(TypicalWeightPerUnit) FROM Warehouse.StockItems
+
+DECLARE @Minweight FLOAT;
+DECLARE @Maxweight DECIMAL;
+
+SELECT @Maxweight = MAX(TypicalWeightPerUnit), @Minweight = MIN(TypicalWeightPerUnit) FROM Warehouse.StockItems;
+
+SELECT StockItemName, TypicalWeightPerUnit FROM Warehouse.StockItems 
+WHERE TypicalWeightPerUnit = @Minweight OR TypicalWeightPerUnit = @Maxweight;
+
+SELECT Brand, COUNT(StockItemName) FROM Warehouse.StockItems GROUP BY Brand
+
+SELECT COUNT(VehicleTemperatureID) AS TempCount, MIN(RecordedWhen) AS StartDate, MAX(RecordedWhen) AS EndDate 
+FROM Warehouse.VehicleTemperatures
+
+SELECT DISTINCT VehicleRegistration, ChillerSensorNumber, MIN(Temperature) AS MinTemp , Max(Temperature) AS MaxTemp, 
+AVG(Temperature) AS AvgTemp, 
+COUNT(VehicleTemperatureID) AS CountofReadings
+FROM Warehouse.VehicleTemperatures
+WHERE RecordedWhen between '03-01-2016' and '03-31-2016'
+GROUP BY VehicleRegistration , ChillerSensorNumber
+ORDER BY ChillerSensorNumber
+
+SELECT * FROM Sales.OrderLines
+
+SELECT OrderID, SUM((Quantity * UnitPrice) * ((TaxRate / 100) + 1)) AS OrderTotal FROM Sales.OrderLines
+WHERE OrderID = 1163
+GROUP BY OrderID
+
+SELECT COUNT(OrderLineID) FROM Sales.OrderLines WHERE  NOT (Quantity = PickedQuantity) 
+
+SELECT  OrderID, SUM(Quantity - PickedQuantity) AS OutStandingQuantity FROM Sales.OrderLines
+WHERE  NOT (Quantity = PickedQuantity) 
+GROUP BY OrderID
+
+SELECT OrderID, SUM((Quantity * UnitPrice) * ((TaxRate / 100) + 1)) AS OrderTotal FROM Sales.OrderLines
+GROUP BY OrderID
+
+SELECT OrderID, SUM((Quantity * UnitPrice) * ((TaxRate / 100) + 1)) AS OrderTotal FROM Sales.OrderLines
+GROUP BY OrderID
+HAVING SUM((Quantity * UnitPrice) * ((TaxRate / 100) + 1)) < 1000
