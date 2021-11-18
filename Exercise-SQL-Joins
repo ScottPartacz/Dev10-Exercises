@@ -1,0 +1,115 @@
+SELECT * FROM Purchasing.Suppliers
+
+/* 1 */
+SELECT SupplierName, SupplierCategoryName FROM Purchasing.Suppliers 
+JOIN Purchasing.SupplierCategories ON Purchasing.Suppliers.SupplierCategoryID = Purchasing.SupplierCategories.SupplierCategoryID
+WHERE SupplierCategoryName LIKE '%Service%'
+
+/* 2 */
+SELECT SupplierName, SupplierCategoryName FROM Purchasing.Suppliers PS
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName LIKE '%Service%'
+
+/* 3 */
+SELECT SupplierName, SupplierCategoryName FROM Purchasing.Suppliers PS
+INNER JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName LIKE '%Service%'
+
+/* 4 */
+SELECT DISTINCT SupplierName, SupplierCategoryName, StockItemName  
+FROM Purchasing.Suppliers PS
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+JOIN Warehouse.StockItems WS ON PS.SupplierID = WS.SupplierID
+WHERE SupplierCategoryName LIKE 'Toy Supplier'
+
+/* 5 */
+SELECT DISTINCT StockGroupName, StockItemName
+FROM Warehouse.StockItems WS
+JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+JOIn Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName LIKE '%Toy Supplier%'
+
+/* 6 */
+DECLARE @GroupList VARCHAR(100)
+
+SELECT @GroupList = COALESCE(@GroupList + ',','') + StockGroupName
+FROM Warehouse.StockItems WS 
+JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+JOIn Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+WHERE StockItemName = 'RC toy sedan car with remote control (Black) 1/50 scale'
+
+SELECT @GroupList
+
+/* 7 */
+
+SELECT StockItemName, STRING_AGG(StockGroupName,', ')
+FROM Warehouse.StockItems WS
+JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+JOIn Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName ='Toy Supplier'
+GROUP BY StockItemName
+/* 8 */
+SELECT DISTINCT StockItemName, UnitPackageType.PackageTypeName AS UnitPackage, OuterPackageType.PackageTypeName AS OuterPackage
+FROM Warehouse.StockItems WS
+JOIN Warehouse.PackageTypes AS UnitPackageType ON UnitPackageType.PackageTypeID = WS.UnitPackageID
+JOIN Warehouse.PackageTypes AS OuterPackageType ON OuterPackageType.PackageTypeID = WS.OuterPackageID
+JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+JOIn Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName ='Toy Supplier'
+/* 9 */
+SELECT  SUM((Quantity * UnitPrice) + (Quantity * UnitPrice * TaxRate/100)) AS TOTAL, SIL.InvoiceID FROM Sales.InvoiceLines SIL
+INNER JOIN Sales.Invoices SI ON SIL.InvoiceID = SI.InvoiceID
+WHERE YEAR(InvoiceDate) = 2016 AND MONTH(InvoiceDate) = 5
+GROUP BY SIL.InvoiceID
+HAVING SUM((Quantity * UnitPrice) + (Quantity * UnitPrice * TaxRate/100)) < 100
+ORDER BY TOTAL, InvoiceID
+
+/* 10 */
+SELECT YEAR(InvoiceDate), MONTH(InvoiceDate),SUM((Quantity * UnitPrice) + (Quantity * UnitPrice * TaxRate/100)) AS TOTAL  
+FROM Sales.InvoiceLines SIL
+JOIN Sales.Invoices SI ON SIL.InvoiceID = SI.InvoiceID
+WHERE YEAR(InvoiceDate) = 2014 OR YEAR(InvoiceDate) = 2015
+GROUP BY YEAR(InvoiceDate), MONTH(InvoiceDate)
+ORDER BY YEAR(InvoiceDate), MONTH(InvoiceDate)
+/* 11 */
+SELECT SIL.InvoiceID, InvoiceLineID, WS.StockItemID, StockItemName, StockGroupName
+FROM Sales.InvoiceLines SIL
+JOIN Sales.Invoices SI ON SIL.InvoiceID = SI.InvoiceID
+JOIN Warehouse.StockItems WS ON SIL.StockItemID = WS.StockItemID
+JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+JOIN Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+WHERE SIL.InvoiceID = 2
+
+ DELETE FROM Warehouse.StockItemStockGroups WHERE StockItemID = 50
+ 
+ /* 3 rows were deleted */
+
+/* 12 */
+SELECT SIL.InvoiceID, InvoiceLineID, WS.StockItemID, StockItemName, CASE 
+    WHEN StockGroupName IS NULL THEN '-'
+    ELSE StockGroupName
+END 
+FROM Sales.InvoiceLines SIL
+JOIN Sales.Invoices SI ON SIL.InvoiceID = SI.InvoiceID
+JOIN Warehouse.StockItems WS ON SIL.StockItemID = WS.StockItemID
+LEFT JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+LEFT JOIN Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+WHERE SIL.InvoiceID = 2 
+
+/* 13 */
+SELECT SIL.InvoiceID, InvoiceLineID, WS.StockItemID, StockItemName, CASE 
+    WHEN StockGroupName IS NULL THEN '-'
+    ELSE StockGroupName
+END 
+FROM Sales.InvoiceLines SIL
+JOIN Sales.Invoices SI ON SIL.InvoiceID = SI.InvoiceID
+JOIN Warehouse.StockItems WS ON SIL.StockItemID = WS.StockItemID
+FULL OUTER JOIN Warehouse.StockItemStockGroups WSS ON WS.StockItemID = WSS.StockItemID
+FULL OUTER JOIN Warehouse.StockGroups WSG ON WSS.StockGroupID = WSG.StockGroupID
+WHERE SIL.InvoiceID = 2 
