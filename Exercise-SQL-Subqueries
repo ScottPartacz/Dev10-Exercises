@@ -1,0 +1,80 @@
+/* 1 */
+SELECT StockItemName FROM Warehouse.StockItems WS
+JOIN Warehouse.Colors WC ON WS.ColorID = WC.ColorID
+WHERE ColorName IN (SELECT ColorName FROM Warehouse.Colors WC WHERE WC.ColorName = 'Blue')
+
+/* 2 */
+SELECT * FROM Warehouse.Colors
+
+SELECT StockItemName, WS.ColorID FROM Warehouse.StockItems WS
+LEFT JOIN Warehouse.Colors WC ON WS.ColorID = WC.ColorID
+WHERE ColorName IN (SELECT ColorName FROM Warehouse.Colors WC WHERE ColorName <> 'Blue') OR WS.ColorID IS NULL
+
+/* 3 */
+SELECT StockItemName FROM Warehouse.StockItems
+WHERE ColorID IS NULL
+
+/* 4 */
+SELECT StockItemName, SupplierName FROM Warehouse.StockItems WS
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE SupplierCategoryName IN (SELECT SupplierCategoryName FROM Purchasing.SupplierCategories WHERE SupplierCategoryName = 'Packaging Supplier')
+
+/* 5 */
+SELECT DISTINCT StockItemName, SupplierName FROM Warehouse.StockItems WS
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierTransactions PST ON WS.SupplierID = PST.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE TransactionDate IN (SELECT TransactionDate FROM Purchasing.SupplierTransactions WHERE Year(TransactionDate) = 2014)
+AND SupplierCategoryName IN (SELECT SupplierCategoryName FROM Purchasing.SupplierCategories WHERE SupplierCategoryName = 'Packaging Supplier')
+
+/* 6 */
+SELECT SupplierName , COUNT(DISTINCT StockItemName) FROM Warehouse.StockItems WS
+JOIN Purchasing.Suppliers PS ON WS.SupplierID = PS.SupplierID
+JOIN Purchasing.SupplierTransactions PST ON WS.SupplierID = PST.SupplierID
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+WHERE TransactionDate IN (SELECT TransactionDate FROM Purchasing.SupplierTransactions WHERE Year(TransactionDate) = 2013)
+AND SupplierCategoryName IN (SELECT SupplierCategoryName FROM Purchasing.SupplierCategories WHERE SupplierCategoryName = 'Toy Supplier')
+GROUP BY SupplierName
+
+/* 7 */
+SELECT DISTINCT SupplierCategoryID, COUNT(SupplierCategoryID) AS SupplierCountbyCategory,
+(SELECT COUNT(SupplierCategoryID) FROM Purchasing.Suppliers)  AS TotalSupplierCount
+FROM Purchasing.Suppliers
+GROUP BY SupplierCategoryID
+
+/* 8 */
+SELECT SupplierCategoryName, COUNT(PS.SupplierCategoryID) AS SupplierCountbyCategory,
+(SELECT COUNT(SupplierCategoryID) FROM Purchasing.Suppliers)  AS TotalSupplierCount
+FROM Purchasing.Suppliers PS
+JOIN Purchasing.SupplierCategories PSC ON PS.SupplierCategoryID = PSC.SupplierCategoryID
+GROUP BY SupplierCategoryName
+
+/* 9 */
+SELECT * FROM Purchasing.Suppliers
+
+DECLARE @SUM BIGINT
+
+SELECT @SUM = SUM(ABS(TransactionAmount)) / 2
+FROM Purchasing.SupplierTransactions PST
+JOIN Purchasing.Suppliers PS ON PS.SupplierID = PST.SupplierID
+WHERE SupplierName = 'A Datum Corporation' AND OutstandingBalance = 0
+HAVING SUM(ABS(TransactionAmount)) > AVG(TransactionAmount)
+
+SELECT SupplierName , TransactionAmount, @SUM,
+(SELECT SUM(TransactionAmount) 
+FROM Purchasing.SupplierTransactions PST
+JOIN Purchasing.Suppliers PS ON PST.SupplierID = PS.SupplierID
+WHERE SupplierName = 'A Datum Corporation'
+) AS OverallTotal
+FROM Purchasing.Suppliers PS
+JOIN Purchasing.SupplierTransactions PST ON PS.SupplierID = PST.SupplierID
+WHERE SupplierName = 'A Datum Corporation'
+GROUP BY TransactionAmount, SupplierName
+HAVING TransactionAmount > (SELECT AVG(TransactionAmount) FROM Purchasing.SupplierTransactions)
+
+/* 10 */
+SELECT SUM(TransactionAmount) 
+FROM Purchasing.SupplierTransactions PST
+JOIN Purchasing.Suppliers PS ON PST.SupplierID = PS.SupplierID
+WHERE SupplierName = 'A Datum Corporation'
