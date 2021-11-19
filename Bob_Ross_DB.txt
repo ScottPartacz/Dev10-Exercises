@@ -1,0 +1,51 @@
+use master; 
+GO
+drop database if exists BobRoss;
+GO
+create database BobRoss;
+GO
+use BobRoss;
+GO
+
+create table Frameshape (
+    FrameShapeID int primary key identity(1, 1),
+    FrameShapeName varchar(50)
+);
+
+create table FrameMaterial (
+    FrameMaterialID int primary key identity(1, 1),
+    FrameMaterial varchar(50)
+);
+
+create table PaintingDetails (
+    PaintingDetailsID int primary key identity(1, 1),
+    Clouds bit not null,
+    Trees bit not null,
+    Boat bit not null
+);
+
+create table Episode (
+    EpisodeID varchar(50) primary key,
+    Title varchar(50) not null,
+    FrameShapeID int not null,
+    FrameMaterialID int not null,
+    constraint fk_Episode_FrameShapeID
+        foreign key (FrameShapeID)
+        references FrameShape(FrameShapeID),
+    constraint fk_Episode_FrameMaterialID
+        foreign key (FrameMaterialID)
+        references FrameMaterial(FrameMaterialID)
+);
+
+create table Episode_PaintingDetails (
+    EpisodeID varchar(50) not null, 
+    PaintingDetailsID int not null,
+    constraint pk_Episode_PaintingDetails
+        primary key (EpisodeID,PaintingDetailsID),
+    constraint fk_Episode_PaintingDetails_PaintingDetailsID
+        foreign key (PaintingDetailsID)
+        references PaintingDetails(PaintingDetailsID),
+    constraint fk_Episode_PaintingDetails_EpisodeID
+        foreign key (EpisodeID)
+        references Episode(EpisodeID)
+);
