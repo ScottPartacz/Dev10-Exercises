@@ -12,28 +12,39 @@ create table Category (
     CategoryName varchar(20)
 );
 
+
 create table [Owner] (
     OwnerID int primary key identity(1,1),
     OwnerGroup varchar(20)
 );
 
+
 create table [Location] (
     LocationID int primary key identity(1,1),
     Longitude float,
-    Lattitude float,
-    City varchar(20),
-    Region varchar(20),
-    Country varchar (20),
+    Latitude float,
+    City varchar(50),
+    Region varchar(50),
+    Country varchar (50),
     NonPhysical bit not null,
+    /* Constraint to check that there is either a lat and long location or all three (Country,Region,City) or its nonPhysical */
     constraint ck_nulllocation
-        check (((Longitude is not null) and (Lattitude is not null)) 
+        check (((Longitude is not null) and (Latitude is not null)) 
         or ((City is not null) and (Country is not null) and (Region is not null))
         or NonPhysical = 1
-        )
+        ),
+    constraint uq_latitude_longitude
+        unique (Latitude,Longitude,City,Region,Country,NonPhysical)
 );
+
 
 create table Souvenir (
     SouvenirID int primary key identity(1,1),
+    SouvenirName varchar(200),
+    SouvenirDesc varchar(200),
+    [Weight] int,
+    DateObtained date not null,
+    Price float not null,
     LocationID int,
     OwnerID int,
     CategoryID int,
