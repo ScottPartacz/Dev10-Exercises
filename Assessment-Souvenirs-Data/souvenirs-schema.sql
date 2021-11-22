@@ -34,7 +34,9 @@ create table [Owner] (
         references [Permissions](PermissionID),
     constraint fk_Owner_OwnerGroupID
         foreign key (OwnerGroupID)
-        references OwnerGroup(OwnerGroupID)
+        references OwnerGroup(OwnerGroupID),
+    constraint uq_Username
+        unique (Username)
 );
 
 create table [Location] (
