@@ -42,25 +42,26 @@ declare @populardate date;
 declare @numberoftimes int;
 select top 1 @populardate = DateObtained ,@numberoftimes = count(DateObtained) from Souvenir
 group by DateObtained
-order by count(DateObtained)  desc 
+order by count(DateObtained)  desc; 
+
 select SouvenirName from Souvenir
-where DateObtained = @populardate
+where DateObtained = @populardate;
 
 /* 8 */
 Select SouvenirName from Souvenir s
 inner join [Location] l on s.LocationID = l.LocationID
-where longitude is null and latitude is null
+where longitude is null and latitude is null;
 
 /* 9 */
 Select SouvenirName from Souvenir s
 inner join [Location] l on s.LocationID = l.LocationID
-where city is null and region is null and country is null
+where city is null and region is null and country is null;
 
 /* 10 */
 Select SouvenirName,City,Region,Country,Latitude,Longitude,[Weight] 
 from Souvenir s
 inner join [Location] l on s.LocationID = l.LocationID
-where [Weight] > (select avg([Weight]) from Souvenir)
+where [Weight] > (select avg([Weight]) from Souvenir);
 
 /* 11 */
 Select max(Price) as HighestPrice, min(Price) as LowestPrice,CategoryName
