@@ -31,10 +31,10 @@ inner join [Location] l on s.LocationID = l.LocationID
 where CategoryID = 7;
 
 /* 6 */
-Select  o.OwnerGroup, min(DateObtained) as EarliestDate , max(DateObtained) as LatestDate
+Select  o.OwnerName, min(DateObtained) as EarliestDate , max(DateObtained) as LatestDate
 from Souvenir s
 inner join [Owner] o on s.OwnerID = o.OwnerID
-group by OwnerGroup
+group by OwnerName
 order by EarliestDate;
 
 /* 7 */
@@ -68,3 +68,18 @@ Select max(Price) as HighestPrice, min(Price) as LowestPrice,CategoryName
 from Souvenir s
 inner join Category c on s.CategoryID = c.CategoryID
 group by CategoryName;
+
+/* 12 */
+
+select * from Souvenir 
+where OwnerID = 1
+
+/* 13 */
+
+select * from [Owner]
+where PermissionID = 2
+
+/* 14 */
+
+select Username from [Owner]
+where [Password] like '%password%'
