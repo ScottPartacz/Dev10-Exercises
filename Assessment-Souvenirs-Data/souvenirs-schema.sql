@@ -19,14 +19,14 @@ create table OwnerGroup (
 
 create table [Permissions] (
     PermissionID int primary key identity(1,1),
-    PermissionTag int
+    PermissionTag varchar(5)
 );
 
 create table [Owner] (
     OwnerID int primary key identity(1,1),
-    OwnerName varchar(100),
-    Username varchar(50),
-    [Password] varchar(50),
+    OwnerName varchar(100) not null,
+    Username varchar(50) not null,
+    [Password] varchar(50) not null,
     PermissionID int,
     OwnerGroupID int,
     constraint fk_Owner_PermissionID

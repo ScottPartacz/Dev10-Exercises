@@ -4,6 +4,13 @@ GO
 /* select * from Souvenir */
 /* select * from [souvenirs-denormalized] */
 
+/* select * from [Permissions] */
+
+insert into [Permissions] (PermissionTag)
+values ('admin');
+insert into [Permissions] (PermissionTag)
+values ('User');
+
 /* select * from Category  */
 /* DELETE FROM Category
    DBCC CHECKIDENT ('Souvenir.dbo.Category',RESEED, 0) */
@@ -11,16 +18,17 @@ insert into Category (CategoryName)
     select distinct Category 
     from [souvenirs-denormalized];
 
-/* select * from [Owner] */
-/* DELETE FROM [Owner]
-   DBCC CHECKIDENT ('Souvenir.dbo.Owner',RESEED, 0) */
-insert into [Owner] (OwnerGroup)
+/* select * from OwnerGroup */
+/* DELETE FROM OwnerGroup
+   DBCC CHECKIDENT ('Souvenir.dbo.OwnerGroup',RESEED, 0) */
+insert into OwnerGroup (OwnerGroup)
     select distinct [Owner] 
     from [souvenirs-denormalized];
 
 /* select * from [Location] */
 /* DELETE FROM [Location]
    DBCC CHECKIDENT ('Souvenir.dbo.Location',RESEED, 0) */
+
 insert into [Location] (Longitude,Latitude,City,Region,Country,NonPhysical)
     select distinct Longitude, Latitude, City, Region, Country, case 
         when Latitude is null and City is null
@@ -28,6 +36,19 @@ insert into [Location] (Longitude,Latitude,City,Region,Country,NonPhysical)
         else 0
         end
     from [souvenirs-denormalized];
+
+/* select * from Owner */
+/* DELETE FROM Owner
+   DBCC CHECKIDENT ('Souvenir.dbo.Owner',RESEED, 0) */
+
+insert into [Owner] (OwnerName,Username,[Password],PermissionID,OwnerGroupID)
+    select distinct OwnerName, Username, [Password], case 
+        when Username = 'Admin'
+        then 1
+        else 2
+        end, og.OwnerGroupID
+    from [souvenirs-denormalized] sd
+    inner join OwnerGroup og on sd.Owner = og.OwnerGroup;
 
 /* select * from Souvenir */
 /* truncate table Souvenir */
@@ -41,7 +62,7 @@ insert into Souvenir ([SouvenirName],SouvenirDesc,[Weight],DateObtained,Price,Lo
     o.OwnerID,c.CategoryID 
     from [souvenirs-denormalized] sd
     left join Souvenir s on sd.[Weight] = s.Weight
-    inner join [Owner] o on sd.[Owner] = o.OwnerGroup
+    inner join [Owner] o on sd.OwnerName = o.OwnerName
     inner join Category c on sd.Category = c.CategoryName
     left join [Location] l on sd.City = l.City or sd.Longitude = l.Longitude;
 
