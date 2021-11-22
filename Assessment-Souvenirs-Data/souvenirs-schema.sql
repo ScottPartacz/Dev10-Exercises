@@ -12,12 +12,30 @@ create table Category (
     CategoryName varchar(20)
 );
 
+create table OwnerGroup (
+    OwnerGroupID int primary key identity(1,1),
+    OwnerGroup varchar(30)
+);
+
+create table [Permissions] (
+    PermissionID int primary key identity(1,1),
+    PermissionTag int
+);
 
 create table [Owner] (
     OwnerID int primary key identity(1,1),
-    OwnerGroup varchar(20)
+    OwnerName varchar(100),
+    Username varchar(50),
+    [Password] varchar(50),
+    PermissionID int,
+    OwnerGroupID int,
+    constraint fk_Owner_PermissionID
+        foreign key (PermissionID)
+        references [Permissions](PermissionID),
+    constraint fk_Owner_OwnerGroupID
+        foreign key (OwnerGroupID)
+        references OwnerGroup(OwnerGroupID)
 );
-
 
 create table [Location] (
     LocationID int primary key identity(1,1),
